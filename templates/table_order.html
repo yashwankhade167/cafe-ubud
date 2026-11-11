@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Table {{ table.number }} · Cafe Ubud</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,400&family=Cinzel:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C; --gold-lt: #E8D5A3; --bark: #2C1A0E; --cream: #FAF6EF;
+    --charcoal: #1A1A1A; --moss: #3A4A35; --muted: rgba(250,246,239,.5);
+  }
+  * { box-sizing: border-box; margin:0; padding:0; }
+  body {
+    background: var(--bark); color: var(--cream);
+    font-family: 'Inter', sans-serif; font-weight: 300;
+    padding-bottom: 100px;
+  }
+  header {
+    position: sticky; top: 0; z-index: 50;
+    background: linear-gradient(to bottom, rgba(26,16,8,.97), rgba(26,16,8,.9));
+    backdrop-filter: blur(8px);
+    padding: 18px 20px;
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid rgba(201,168,76,.15);
+  }
+  .logo { font-family:'Cinzel',serif; font-size:1rem; letter-spacing:.25em; color:var(--gold); }
+  .table-badge {
+    font-size: .65rem; letter-spacing: .15em; text-transform: uppercase;
+    color: var(--gold); border: 1px solid rgba(201,168,76,.3);
+    padding: 6px 14px; border-radius: 20px;
+  }
+  .hero-banner {
+    padding: 36px 20px 28px;
+    text-align: center;
+  }
+  .hero-banner h1 {
+    font-family: 'Cormorant Garamond', serif; font-weight: 300;
+    font-size: 1.9rem; margin-bottom: 8px;
+  }
+  .hero-banner p { font-size: .85rem; color: var(--muted); }
+
+  .tabs {
+    display: flex; gap: 0; overflow-x: auto; padding: 0 16px;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    margin-bottom: 20px;
+  }
+  .tab {
+    background:none; border:none; color:var(--muted);
+    font-family:'Inter',sans-serif; font-size:.75rem; letter-spacing:.08em; text-transform:uppercase;
+    padding: 12px 18px; white-space: nowrap; cursor: pointer;
+    border-bottom: 2px solid transparent;
+  }
+  .tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+  .menu-list { padding: 0 16px; display: flex; flex-direction: column; gap: 14px; }
+  .menu-row {
+    display: flex; gap: 16px; align-items: center;
+    background: rgba(255,255,255,.03);
+    border: 1px solid rgba(255,255,255,.06);
+    border-radius: 10px; padding: 14px;
+  }
+  .mr-emoji {
+    width: 56px; height: 56px; border-radius: 8px;
+    background: rgba(201,168,76,.1);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem; flex-shrink: 0;
+  }
+  .mr-info { flex: 1; min-width: 0; }
+  .mr-name { font-size: .95rem; color: var(--cream); margin-bottom: 3px; }
+  .mr-desc { font-size: .72rem; color: var(--muted); line-height: 1.4; }
+  .mr-price { font-size: .9rem; color: var(--gold); margin-top: 6px; }
+  .mr-add {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: var(--gold); color: var(--bark); border: none;
+    font-size: 1.2rem; flex-shrink: 0; cursor: pointer;
+  }
+
+  /* Sticky cart bar */
+  #cart-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--gold); color: var(--bark);
+    padding: 16px 20px;
+    display: none; align-items: center; justify-content: space-between;
+    z-index: 60;
+    font-family: 'Cinzel', serif; font-size: .8rem; letter-spacing: .08em;
+  }
+  #cart-bar.show { display: flex; }
+
+  /* Tracker */
+  .tracker-wrap { padding: 24px 16px; }
+  .tracker-list { display: flex; flex-direction: column; gap: 0; margin-top: 16px; }
+  .t-row { display: flex; gap: 14px; align-items: center; padding: 10px 0; }
+  .t-dot { width: 28px; height: 28px; border-radius: 50%; border: 2px solid rgba(255,255,255,.15); display:flex; align-items:center; justify-content:center; font-size:.85rem; flex-shrink:0; }
+  .t-dot.done { border-color: var(--gold); background: var(--gold); }
+  .t-dot.active { border-color: var(--gold); box-shadow: 0 0 0 5px rgba(201,168,76,.15); }
+  .t-text { font-size: .8rem; color: var(--muted); text-transform: capitalize; }
+  .t-text.done, .t-text.active { color: var(--cream); }
+
+  .action-row { display: flex; gap: 10px; padding: 0 16px; margin-top: 20px; flex-wrap: wrap; }
+  .action-btn {
+    flex: 1; min-width: 130px;
+    background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1);
+    color: var(--cream); padding: 12px; border-radius: 8px;
+    font-size: .75rem; text-align: center; cursor: pointer;
+  }
+  .action-btn:active { background: rgba(201,168,76,.15); border-color: var(--gold); }
+
+  #toast {
+    position: fixed; bottom: 90px; left: 50%; transform: translate(-50%,20px);
+    background: var(--gold); color: var(--bark); padding: 12px 22px;
+    border-radius: 6px; font-size: .8rem; opacity: 0; transition: all .3s; z-index: 70;
+    pointer-events: none;
+  }
+  #toast.show { opacity: 1; transform: translate(-50%,0); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">CAFE UBUD</div>
+  <div class="table-badge">Table {{ table.number }}</div>
+</header>
+
+<div class="hero-banner">
+  <h1>Welcome to your table.</h1>
+  <p>Browse the menu, order instantly, and track it live — no app needed.</p>
+</div>
+
+<div class="tabs" id="tabs">
+  <button class="tab active" onclick="filterMenu('all', this)">All</button>
+  <button class="tab" onclick="filterMenu('coffee', this)">Hot Coffee</button>
+  <button class="tab" onclick="filterMenu('cold', this)">Cold Brew</button>
+  <button class="tab" onclick="filterMenu('food', this)">Food</button>
+  <button class="tab" onclick="filterMenu('dessert', this)">Desserts</button>
+</div>
+
+<div class="menu-list" id="menu-list"></div>
+
+<div class="action-row">
+  <button class="action-btn" onclick="quickRequest('💧 Water requested')">💧 Request Water</button>
+  <button class="action-btn" onclick="quickRequest('🧾 Bill requested')">🧾 Request Bill</button>
+  <button class="action-btn" onclick="quickRequest('🙋 Waiter called')">🙋 Call Waiter</button>
+</div>
+
+<div class="tracker-wrap" id="tracker-wrap" style="display:none;">
+  <div style="font-family:'Cormorant Garamond',serif; font-size:1.3rem;">Your Order #<span id="order-id-label"></span></div>
+  <div class="tracker-list" id="tracker-list"></div>
+</div>
+
+<div id="cart-bar">
+  <span id="cart-summary">0 items · ₹0</span>
+  <span onclick="placeOrder()">Place Order →</span>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const TABLE_TOKEN = "{{ table.qr_token }}";
+const STEPS = ["pending","accepted","preparing","cooking","quality_check","ready","served"];
+let menuItems = [];
+let cart = [];
+let activeOrderId = null;
+let pollTimer = null;
+
+async function loadMenu() {
+  const res = await fetch('/api/menu');
+  const data = await res.json();
+  menuItems = data.map(d => ({ id:d.id, cat:d.category, emoji:d.emoji, name:d.name, desc:d.description, price:d.price }));
+  renderMenu();
+}
+
+function renderMenu(filter='all') {
+  const list = document.getElementById('menu-list');
+  list.innerHTML = '';
+  menuItems.filter(m => filter==='all' || m.cat===filter).forEach(m => {
+    const row = document.createElement('div');
+    row.className = 'menu-row';
+    row.innerHTML = `
+      <div class="mr-emoji">${m.emoji}</div>
+      <div class="mr-info">
+        <div class="mr-name">${m.name}</div>
+        <div class="mr-desc">${m.desc}</div>
+        <div class="mr-price">₹${m.price}</div>
+      </div>
+      <button class="mr-add" onclick="addToCart(${m.id})">+</button>`;
+    list.appendChild(row);
+  });
+}
+function filterMenu(cat, btn) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  renderMenu(cat);
+}
+
+function addToCart(id) {
+  const item = menuItems.find(m=>m.id===id);
+  const existing = cart.find(c=>c.id===id);
+  if (existing) existing.qty++;
+  else cart.push({...item, qty:1});
+  updateCartBar();
+  showToast(`${item.emoji} ${item.name} added`);
+}
+function updateCartBar() {
+  const bar = document.getElementById('cart-bar');
+  const count = cart.reduce((s,c)=>s+c.qty,0);
+  const total = cart.reduce((s,c)=>s+c.price*c.qty,0);
+  if (count > 0) {
+    bar.classList.add('show');
+    document.getElementById('cart-summary').textContent = `${count} item${count!==1?'s':''} · ₹${total}`;
+  } else {
+    bar.classList.remove('show');
+  }
+}
+
+async function placeOrder() {
+  if (!cart.length) return;
+  try {
+    const res = await fetch('/api/orders', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        table_token: TABLE_TOKEN,
+        items: cart.map(c => ({ menu_item_id: c.id, quantity: c.qty }))
+      })
+    });
+    if (!res.ok) throw new Error();
+    const order = await res.json();
+    activeOrderId = order.id;
+    cart = [];
+    updateCartBar();
+    showToast(`Order #${order.id} placed!`);
+    showTracker(order);
+    startPolling();
+  } catch(e) {
+    showToast('Could not place order — try again.');
+  }
+}
+
+function showTracker(order) {
+  document.getElementById('tracker-wrap').style.display = 'block';
+  document.getElementById('order-id-label').textContent = order.id;
+  renderTracker(order.status);
+  document.getElementById('tracker-wrap').scrollIntoView({behavior:'smooth'});
+}
+function renderTracker(status) {
+  const idx = STEPS.indexOf(status);
+  const list = document.getElementById('tracker-list');
+  list.innerHTML = STEPS.map((s,i) => `
+    <div class="t-row">
+      <div class="t-dot ${i<idx?'done':i===idx?'active':''}">${i<idx?'✓':''}</div>
+      <div class="t-text ${i<idx?'done':i===idx?'active':''}">${s.replace('_',' ')}</div>
+    </div>`).join('');
+}
+function startPolling() {
+  if (pollTimer) clearInterval(pollTimer);
+  pollTimer = setInterval(async () => {
+    if (!activeOrderId) return;
+    const res = await fetch(`/api/orders/${activeOrderId}`);
+    if (res.ok) {
+      const order = await res.json();
+      renderTracker(order.status);
+      if (order.status === 'served' || order.status === 'completed') clearInterval(pollTimer);
+    }
+  }, 5000);
+}
+
+function quickRequest(msg) {
+  showToast(msg + ' — staff notified');
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 2400);
+}
+
+loadMenu();
+</script>
+</body>
+</html>

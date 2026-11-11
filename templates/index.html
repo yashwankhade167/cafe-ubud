@@ -1,0 +1,1521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cafe Ubud – Escape Amravati. Enter Ubud.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Cinzel:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/TextPlugin.min.js"></script>
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --gold:     #C9A84C;
+    --gold-lt:  #E8D5A3;
+    --cream:    #FAF6EF;
+    --bark:     #2C1A0E;
+    --moss:     #3A4A35;
+    --mist:     #8B9E88;
+    --charcoal: #1A1A1A;
+    --sand:     #D4C4A8;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bark);
+    color: var(--cream);
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* ── CUSTOM CURSOR ───────────────────────────────── */
+  #cursor {
+    width: 10px; height: 10px;
+    background: var(--gold);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none; z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform .15s ease, background .2s;
+    mix-blend-mode: difference;
+  }
+  #cursor-ring {
+    width: 36px; height: 36px;
+    border: 1px solid rgba(201,168,76,.5);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none; z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: transform .4s cubic-bezier(.23,1,.32,1), width .3s, height .3s, border-color .3s;
+  }
+  body:has(a:hover) #cursor-ring,
+  body:has(button:hover) #cursor-ring { width: 56px; height: 56px; border-color: var(--gold); }
+
+  /* ── INTRO OVERLAY ───────────────────────────────── */
+  #intro {
+    position: fixed; inset: 0;
+    background: #000;
+    z-index: 1000;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 24px;
+  }
+  #intro-logo {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(2rem, 6vw, 5rem);
+    color: var(--gold);
+    letter-spacing: .25em;
+    opacity: 0;
+  }
+  #intro-tagline {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: clamp(1rem, 2.5vw, 1.6rem);
+    color: var(--gold-lt);
+    opacity: 0;
+    letter-spacing: .12em;
+  }
+  #intro-bar {
+    width: 0; height: 1px;
+    background: var(--gold);
+    transition: none;
+  }
+  #sound-hint {
+    position: absolute; bottom: 40px;
+    font-size: .7rem; letter-spacing: .2em; text-transform: uppercase;
+    color: rgba(255,255,255,.35);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:.35} 50%{opacity:.8} }
+
+  /* ── NAVIGATION ──────────────────────────────────── */
+  nav {
+    position: fixed; top: 0; width: 100%;
+    z-index: 500;
+    padding: 28px 48px;
+    display: flex; align-items: center; justify-content: space-between;
+    mix-blend-mode: normal;
+  }
+  nav::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,.6) 0%, transparent 100%);
+    pointer-events: none;
+  }
+  .nav-logo {
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    letter-spacing: .3em;
+    color: var(--gold);
+    text-decoration: none;
+    position: relative;
+  }
+  .nav-links {
+    display: flex; gap: 36px; list-style: none;
+    position: relative;
+  }
+  .nav-links a {
+    font-size: .7rem; letter-spacing: .2em; text-transform: uppercase;
+    color: var(--cream); text-decoration: none;
+    transition: color .3s;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: ''; position: absolute; bottom: -4px; left: 0;
+    width: 0; height: 1px; background: var(--gold);
+    transition: width .4s ease;
+  }
+  .nav-links a:hover { color: var(--gold); }
+  .nav-links a:hover::after { width: 100%; }
+  .nav-cta {
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    padding: 10px 24px;
+    font-family: 'Cinzel', serif;
+    font-size: .65rem;
+    letter-spacing: .2em;
+    cursor: none;
+    transition: background .3s, color .3s;
+    position: relative;
+  }
+  .nav-cta:hover { background: var(--gold); color: var(--bark); }
+
+  /* ── HERO ────────────────────────────────────────── */
+  #hero {
+    position: relative;
+    height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 60% 40%, #3A2510 0%, #1A0D05 50%, #000 100%);
+  }
+  /* Animated bokeh orbs */
+  .orb {
+    position: absolute; border-radius: 50%;
+    filter: blur(80px); opacity: .35;
+    animation: drift linear infinite;
+  }
+  .orb-1 { width: 500px; height: 500px; background: #5C3A1E; top: -100px; left: -100px; animation-duration: 20s; }
+  .orb-2 { width: 350px; height: 350px; background: var(--moss); top: 50%; right: -50px; animation-duration: 26s; animation-delay: -8s; }
+  .orb-3 { width: 250px; height: 250px; background: #C9A84C33; bottom: 80px; left: 40%; animation-duration: 18s; animation-delay: -4s; }
+  @keyframes drift {
+    0%   { transform: translate(0,0) rotate(0deg); }
+    33%  { transform: translate(30px,-20px) rotate(120deg); }
+    66%  { transform: translate(-20px,30px) rotate(240deg); }
+    100% { transform: translate(0,0) rotate(360deg); }
+  }
+
+  /* Jungle leaf silhouettes */
+  .leaf {
+    position: absolute;
+    background: var(--moss);
+    opacity: .15;
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  }
+  .leaf-1 { width: 600px; height: 800px; top: -200px; right: -100px; transform: rotate(-20deg); clip-path: ellipse(50% 80% at 60% 20%); border-radius: 0 80% 80% 40%; }
+  .leaf-2 { width: 400px; height: 600px; bottom: -100px; left: -80px; transform: rotate(15deg); clip-path: ellipse(50% 80% at 40% 80%); border-radius: 80% 0 40% 80%; }
+
+  .hero-content {
+    position: relative; z-index: 2;
+    text-align: center; padding: 0 24px;
+  }
+  .hero-eyebrow {
+    font-size: .65rem; letter-spacing: .5em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 32px;
+    opacity: 0;
+  }
+  .hero-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(3rem, 8vw, 8rem);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: .05em;
+    color: var(--cream);
+    overflow: hidden;
+  }
+  .hero-title .line { display: block; overflow: hidden; }
+  .hero-title .word { display: inline-block; transform: translateY(110%); }
+  .hero-divider {
+    width: 1px; height: 60px; background: var(--gold);
+    margin: 36px auto;
+    transform: scaleY(0); transform-origin: top;
+    opacity: 0;
+  }
+  .hero-sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: clamp(1.1rem, 2.5vw, 1.8rem);
+    color: var(--gold-lt);
+    opacity: 0; letter-spacing: .08em;
+  }
+  .hero-actions {
+    margin-top: 56px;
+    display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;
+    opacity: 0;
+  }
+  .btn-primary {
+    background: var(--gold);
+    color: var(--bark);
+    border: none;
+    padding: 16px 40px;
+    font-family: 'Cinzel', serif;
+    font-size: .7rem;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    cursor: none;
+    text-decoration: none;
+    display: inline-block;
+    transition: background .3s, transform .3s;
+  }
+  .btn-primary:hover { background: var(--gold-lt); transform: translateY(-2px); }
+  .btn-outline {
+    background: transparent;
+    color: var(--cream);
+    border: 1px solid rgba(255,255,255,.3);
+    padding: 16px 40px;
+    font-family: 'Cinzel', serif;
+    font-size: .7rem;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    cursor: none;
+    text-decoration: none;
+    display: inline-block;
+    transition: border-color .3s, color .3s, transform .3s;
+  }
+  .btn-outline:hover { border-color: var(--gold); color: var(--gold); transform: translateY(-2px); }
+
+  .scroll-indicator {
+    position: absolute; bottom: 40px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    opacity: 0;
+  }
+  .scroll-indicator span {
+    font-size: .6rem; letter-spacing: .3em; text-transform: uppercase;
+    color: rgba(255,255,255,.4);
+  }
+  .scroll-line {
+    width: 1px; height: 48px;
+    background: linear-gradient(to bottom, var(--gold), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+  @keyframes scrollPulse {
+    0%   { transform: scaleY(0); transform-origin: top; opacity: 1; }
+    100% { transform: scaleY(1); transform-origin: top; opacity: 0; }
+  }
+
+  /* ── SECTION BASE ────────────────────────────────── */
+  section { position: relative; }
+  .section-label {
+    font-size: .6rem; letter-spacing: .4em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 20px;
+  }
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.2rem, 5vw, 4.5rem);
+    font-weight: 300;
+    line-height: 1.15;
+    color: var(--cream);
+  }
+  .section-title em { font-style: italic; color: var(--gold-lt); }
+  .section-body {
+    font-size: 1rem; line-height: 1.9;
+    color: rgba(250,246,239,.65);
+    max-width: 520px;
+  }
+
+  /* ── STORY SECTION ───────────────────────────────── */
+  #story {
+    background: var(--bark);
+    padding: 160px 0;
+  }
+  .story-inner {
+    max-width: 1200px; margin: 0 auto; padding: 0 48px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 100px;
+    align-items: center;
+  }
+  .story-visual {
+    position: relative; height: 600px;
+  }
+  .story-frame {
+    position: absolute;
+    overflow: hidden;
+    border: 1px solid rgba(201,168,76,.2);
+  }
+  .story-frame-1 {
+    width: 70%; height: 70%;
+    top: 0; left: 0;
+    background: linear-gradient(135deg, #3A2510, #1A0D05);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .story-frame-2 {
+    width: 55%; height: 55%;
+    bottom: 0; right: 0;
+    background: linear-gradient(135deg, var(--moss), #1E2E1A);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .frame-inner {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 12px;
+  }
+  .frame-emoji { font-size: 4rem; filter: sepia(1) hue-rotate(10deg); }
+  .frame-caption {
+    font-size: .6rem; letter-spacing: .3em; text-transform: uppercase;
+    color: var(--gold); text-align: center; padding: 0 20px;
+  }
+  .story-accent-line {
+    position: absolute; top: 50%; left: -30px;
+    width: 60px; height: 1px; background: var(--gold);
+  }
+
+  /* ── PARALLAX CHAPTERS ───────────────────────────── */
+  .chapter {
+    min-height: 100vh;
+    display: flex; align-items: center;
+    padding: 120px 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .chapter-bg {
+    position: absolute; inset: -20%;
+    background-size: cover; background-position: center;
+    transition: none;
+    will-change: transform;
+  }
+  .chapter-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to right, rgba(0,0,0,.85) 0%, rgba(0,0,0,.3) 100%);
+  }
+  .chapter-content {
+    position: relative; z-index: 2;
+    max-width: 600px; margin-left: auto;
+  }
+  .chapter-number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 8rem; font-weight: 300;
+    color: rgba(201,168,76,.12);
+    line-height: 1;
+    position: absolute; top: -20px; left: -20px;
+    user-select: none;
+  }
+
+  #ch1 .chapter-bg { background: linear-gradient(135deg, #1A0D05 0%, #2C1A0E 40%, #3A2510 70%, #4A3220 100%); }
+  #ch2 .chapter-bg { background: linear-gradient(135deg, #1E2E1A 0%, #2A3E25 40%, #3A4A35 70%, #4A5A45 100%); }
+  #ch3 .chapter-bg { background: linear-gradient(135deg, #0D1A1A 0%, #1A2E2E 40%, #2E4A4A 70%, #3A5A5A 100%); }
+
+  /* ── MENU SECTION ────────────────────────────────── */
+  #menu {
+    background: var(--charcoal);
+    padding: 140px 0;
+  }
+  .menu-header {
+    text-align: center;
+    padding: 0 48px;
+    margin-bottom: 80px;
+  }
+  .menu-tabs {
+    display: flex; gap: 0; justify-content: center;
+    margin-top: 48px;
+    border-bottom: 1px solid rgba(255,255,255,.1);
+  }
+  .menu-tab {
+    background: none; border: none; color: rgba(250,246,239,.4);
+    font-family: 'Cinzel', serif; font-size: .65rem; letter-spacing: .2em;
+    text-transform: uppercase; padding: 14px 32px; cursor: none;
+    position: relative; transition: color .3s;
+  }
+  .menu-tab::after {
+    content: ''; position: absolute; bottom: -1px; left: 0;
+    width: 0; height: 2px; background: var(--gold);
+    transition: width .4s ease;
+  }
+  .menu-tab.active { color: var(--gold); }
+  .menu-tab.active::after { width: 100%; }
+  .menu-tab:hover { color: var(--cream); }
+
+  .menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2px;
+    max-width: 1400px; margin: 0 auto;
+  }
+  .menu-card {
+    position: relative; overflow: hidden;
+    background: #111;
+    cursor: none;
+    group: true;
+    aspect-ratio: 3/4;
+    display: flex;
+  }
+  .menu-card-bg {
+    position: absolute; inset: 0;
+    transition: transform .8s cubic-bezier(.23,1,.32,1);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 6rem;
+  }
+  .menu-card:hover .menu-card-bg { transform: scale(1.08); }
+  .mc-coffee { background: linear-gradient(160deg, #2C1A0E, #1A0D05); }
+  .mc-cold   { background: linear-gradient(160deg, #0D1A2E, #091020); }
+  .mc-food   { background: linear-gradient(160deg, #1A2E0D, #091A05); }
+  .mc-dessert{ background: linear-gradient(160deg, #2E1A2C, #1A0920); }
+
+  .menu-card-info {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,.9) 0%, transparent 50%);
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 32px;
+    transition: background .4s;
+  }
+  .menu-card:hover .menu-card-info { background: linear-gradient(to top, rgba(0,0,0,.95) 0%, rgba(0,0,0,.3) 100%); }
+  .card-tag {
+    font-size: .55rem; letter-spacing: .3em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 10px;
+  }
+  .card-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem; font-weight: 300;
+    color: var(--cream); margin-bottom: 8px;
+    line-height: 1.2;
+  }
+  .card-desc {
+    font-size: .8rem; color: rgba(250,246,239,.5);
+    line-height: 1.6; margin-bottom: 20px;
+    transform: translateY(10px); opacity: 0;
+    transition: transform .4s ease, opacity .4s ease;
+  }
+  .menu-card:hover .card-desc { transform: translateY(0); opacity: 1; }
+  .card-footer {
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .card-price {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem; color: var(--gold);
+  }
+  .card-add {
+    width: 40px; height: 40px;
+    border: 1px solid rgba(201,168,76,.5);
+    background: transparent; color: var(--gold);
+    font-size: 1.2rem; cursor: none;
+    transition: background .3s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .card-add:hover { background: var(--gold); color: var(--bark); }
+
+  /* ── QR ORDERING ─────────────────────────────────── */
+  #qr-order {
+    background: linear-gradient(160deg, var(--moss) 0%, #1E2E1A 50%, var(--bark) 100%);
+    padding: 140px 48px;
+  }
+  .qr-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 100px;
+    align-items: center;
+  }
+  .qr-visual {
+    display: flex; flex-direction: column; align-items: center; gap: 32px;
+  }
+  .qr-frame {
+    width: 240px; height: 240px;
+    border: 2px solid var(--gold);
+    padding: 20px;
+    position: relative;
+  }
+  .qr-frame::before, .qr-frame::after {
+    content: '';
+    position: absolute;
+    width: 24px; height: 24px;
+    border-color: var(--gold-lt);
+    border-style: solid;
+  }
+  .qr-frame::before { top: -6px; left: -6px; border-width: 2px 0 0 2px; }
+  .qr-frame::after  { bottom: -6px; right: -6px; border-width: 0 2px 2px 0; }
+  .qr-inner-grid {
+    width: 100%; height: 100%;
+    display: grid; grid-template-columns: repeat(5,1fr); grid-template-rows: repeat(5,1fr); gap: 4px;
+  }
+  .qr-cell {
+    background: var(--bark);
+    border-radius: 2px;
+  }
+  .qr-cell.filled { background: var(--cream); }
+  .qr-table-badge {
+    font-family: 'Cinzel', serif;
+    font-size: .7rem; letter-spacing: .3em;
+    color: var(--gold); text-align: center;
+  }
+  .qr-steps {
+    display: flex; flex-direction: column; gap: 28px;
+    margin-top: 48px;
+  }
+  .qr-step {
+    display: flex; gap: 20px; align-items: flex-start;
+  }
+  .step-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem; color: var(--gold); opacity: .4;
+    line-height: 1; min-width: 32px;
+  }
+  .step-text h4 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem; color: var(--cream);
+    margin-bottom: 4px;
+  }
+  .step-text p { font-size: .8rem; color: rgba(250,246,239,.5); line-height: 1.6; }
+
+  /* ── ORDER TRACKER ───────────────────────────────── */
+  #tracker {
+    background: var(--charcoal);
+    padding: 140px 48px;
+  }
+  .tracker-inner {
+    max-width: 900px; margin: 0 auto; text-align: center;
+  }
+  .tracker-timeline {
+    display: flex; align-items: flex-start;
+    justify-content: center;
+    gap: 0;
+    margin-top: 80px;
+    position: relative;
+  }
+  .tracker-timeline::before {
+    content: '';
+    position: absolute; top: 20px; left: 12.5%; right: 12.5%;
+    height: 1px; background: rgba(255,255,255,.1);
+  }
+  .tracker-step {
+    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 16px;
+    position: relative;
+  }
+  .t-dot {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,.15);
+    background: var(--charcoal);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+    position: relative; z-index: 1;
+    transition: border-color .5s, background .5s;
+  }
+  .t-dot.done { border-color: var(--gold); background: var(--gold); }
+  .t-dot.active { border-color: var(--gold); background: transparent; box-shadow: 0 0 0 6px rgba(201,168,76,.15); }
+  .t-label {
+    font-size: .6rem; letter-spacing: .15em; text-transform: uppercase;
+    color: rgba(250,246,239,.35); text-align: center;
+    transition: color .5s;
+  }
+  .t-label.done { color: var(--gold); }
+  .t-label.active { color: var(--cream); }
+
+  /* ── GALLERY ─────────────────────────────────────── */
+  #gallery {
+    background: var(--bark);
+    padding: 140px 0;
+  }
+  .gallery-header {
+    text-align: center; padding: 0 48px;
+    margin-bottom: 80px;
+  }
+  .gallery-masonry {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: 200px;
+    gap: 4px;
+    padding: 0 4px;
+  }
+  .g-cell {
+    overflow: hidden; position: relative;
+    cursor: none;
+  }
+  .g-cell:nth-child(3n+1) { grid-row: span 2; }
+  .g-cell:nth-child(5n+2) { grid-column: span 2; }
+  .g-inner {
+    width: 100%; height: 100%;
+    transition: transform .8s cubic-bezier(.23,1,.32,1);
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 8px;
+    font-size: 3rem;
+  }
+  .g-cell:hover .g-inner { transform: scale(1.06); }
+  .g1 { background: linear-gradient(135deg, #3A2510, #1A0D05); }
+  .g2 { background: linear-gradient(135deg, #1E2E1A, #0D1A0D); }
+  .g3 { background: linear-gradient(135deg, #2E1A2C, #1A091A); }
+  .g4 { background: linear-gradient(135deg, #0D1A2E, #05091A); }
+  .g5 { background: linear-gradient(135deg, #2E2A1A, #1A1605); }
+  .g6 { background: linear-gradient(135deg, #1A2E2E, #091A1A); }
+  .g7 { background: linear-gradient(135deg, #2E1A1A, #1A0505); }
+  .g8 { background: linear-gradient(135deg, #1A2A0D, #0D1A05); }
+  .g-label {
+    font-size: .55rem; letter-spacing: .2em; text-transform: uppercase;
+    color: rgba(250,246,239,.5);
+  }
+  .g-overlay {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0);
+    transition: background .4s;
+  }
+  .g-cell:hover .g-overlay { background: rgba(0,0,0,.2); }
+
+  /* ── RESERVE ─────────────────────────────────────── */
+  #reserve {
+    background: var(--charcoal);
+    padding: 140px 48px;
+  }
+  .reserve-inner {
+    max-width: 1100px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 100px;
+    align-items: start;
+  }
+  .form-field {
+    margin-bottom: 28px;
+  }
+  .form-field label {
+    display: block;
+    font-size: .6rem; letter-spacing: .3em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 10px;
+  }
+  .form-field input,
+  .form-field select,
+  .form-field textarea {
+    width: 100%;
+    background: transparent;
+    border: none; border-bottom: 1px solid rgba(255,255,255,.15);
+    color: var(--cream);
+    font-family: 'Inter', sans-serif;
+    font-size: .9rem; font-weight: 300;
+    padding: 12px 0;
+    outline: none;
+    transition: border-color .3s;
+    cursor: none;
+  }
+  .form-field input:focus,
+  .form-field select:focus { border-color: var(--gold); }
+  .form-field select option { background: var(--charcoal); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .reserve-info h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem; font-weight: 300; color: var(--cream);
+    margin-bottom: 24px;
+  }
+  .reserve-detail {
+    display: flex; align-items: flex-start; gap: 16px;
+    margin-bottom: 24px;
+  }
+  .rd-icon { font-size: 1.4rem; margin-top: 2px; }
+  .rd-text h4 { font-size: .8rem; color: var(--gold); margin-bottom: 4px; }
+  .rd-text p { font-size: .85rem; color: rgba(250,246,239,.5); line-height: 1.6; }
+
+  /* ── FOOTER ──────────────────────────────────────── */
+  footer {
+    background: #0A0603;
+    padding: 80px 48px 40px;
+  }
+  .footer-inner {
+    max-width: 1200px; margin: 0 auto;
+  }
+  .footer-top {
+    display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 60px;
+    padding-bottom: 60px;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    margin-bottom: 40px;
+  }
+  .footer-brand .brand-name {
+    font-family: 'Cinzel', serif;
+    font-size: 1.5rem; letter-spacing: .2em;
+    color: var(--gold); margin-bottom: 16px;
+  }
+  .footer-brand p { font-size: .8rem; color: rgba(250,246,239,.4); line-height: 1.8; }
+  .footer-col h5 {
+    font-size: .6rem; letter-spacing: .3em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 20px;
+  }
+  .footer-col ul { list-style: none; }
+  .footer-col ul li { margin-bottom: 12px; }
+  .footer-col ul li a {
+    font-size: .8rem; color: rgba(250,246,239,.4);
+    text-decoration: none; transition: color .3s;
+  }
+  .footer-col ul li a:hover { color: var(--gold); }
+  .footer-bottom {
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 16px;
+  }
+  .footer-bottom p { font-size: .7rem; color: rgba(250,246,239,.25); }
+  .social-links { display: flex; gap: 20px; }
+  .social-link {
+    width: 36px; height: 36px;
+    border: 1px solid rgba(255,255,255,.1);
+    display: flex; align-items: center; justify-content: center;
+    text-decoration: none; color: rgba(250,246,239,.4);
+    font-size: .75rem;
+    transition: border-color .3s, color .3s;
+    cursor: none;
+  }
+  .social-link:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* ── CART SIDEBAR ────────────────────────────────── */
+  #cart-sidebar {
+    position: fixed; right: 0; top: 0; bottom: 0;
+    width: 400px;
+    background: #0D0B08;
+    border-left: 1px solid rgba(201,168,76,.15);
+    z-index: 800;
+    transform: translateX(100%);
+    transition: transform .5s cubic-bezier(.23,1,.32,1);
+    display: flex; flex-direction: column;
+    padding: 0;
+  }
+  #cart-sidebar.open { transform: translateX(0); }
+  .cart-header {
+    padding: 32px 28px 24px;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .cart-header h3 {
+    font-family: 'Cinzel', serif; font-size: .85rem;
+    letter-spacing: .2em; color: var(--gold);
+  }
+  .cart-close {
+    background: none; border: none; color: var(--cream);
+    font-size: 1.2rem; cursor: none;
+  }
+  .cart-items { flex: 1; overflow-y: auto; padding: 24px 28px; }
+  .cart-item {
+    display: flex; gap: 16px; align-items: center;
+    padding: 16px 0; border-bottom: 1px solid rgba(255,255,255,.06);
+  }
+  .ci-emoji { font-size: 2rem; }
+  .ci-info { flex: 1; }
+  .ci-name { font-size: .85rem; color: var(--cream); margin-bottom: 4px; }
+  .ci-price { font-size: .75rem; color: var(--gold); }
+  .ci-qty {
+    display: flex; gap: 10px; align-items: center;
+  }
+  .ci-qty button {
+    background: none; border: 1px solid rgba(255,255,255,.15);
+    color: var(--cream); width: 24px; height: 24px;
+    font-size: .8rem; cursor: none;
+    transition: border-color .2s;
+  }
+  .ci-qty button:hover { border-color: var(--gold); }
+  .ci-qty span { font-size: .85rem; min-width: 16px; text-align: center; }
+  .cart-footer {
+    padding: 24px 28px;
+    border-top: 1px solid rgba(255,255,255,.08);
+  }
+  .cart-total {
+    display: flex; justify-content: space-between; margin-bottom: 20px;
+  }
+  .cart-total span { font-size: .7rem; letter-spacing: .2em; text-transform: uppercase; color: rgba(250,246,239,.4); }
+  .cart-total strong { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; color: var(--gold); }
+  .cart-checkout {
+    width: 100%; background: var(--gold); border: none;
+    color: var(--bark); font-family: 'Cinzel', serif;
+    font-size: .7rem; letter-spacing: .2em; text-transform: uppercase;
+    padding: 16px; cursor: none;
+    transition: background .3s;
+  }
+  .cart-checkout:hover { background: var(--gold-lt); }
+
+  /* ── FLOATING CART BTN ───────────────────────────── */
+  #cart-btn {
+    position: fixed; bottom: 40px; right: 40px;
+    width: 60px; height: 60px;
+    background: var(--gold);
+    border: none; border-radius: 50%;
+    color: var(--bark); font-size: 1.3rem;
+    cursor: none; z-index: 700;
+    box-shadow: 0 8px 32px rgba(201,168,76,.3);
+    transition: transform .3s, box-shadow .3s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  #cart-btn:hover { transform: scale(1.1); box-shadow: 0 12px 48px rgba(201,168,76,.4); }
+  #cart-count {
+    position: absolute; top: -4px; right: -4px;
+    width: 20px; height: 20px;
+    background: var(--bark);
+    border-radius: 50%;
+    font-size: .65rem; font-weight: 500;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--gold);
+  }
+
+  /* ── TOAST ───────────────────────────────────────── */
+  #toast {
+    position: fixed; bottom: 120px; right: 40px;
+    background: var(--gold); color: var(--bark);
+    padding: 14px 24px;
+    font-size: .75rem; letter-spacing: .15em;
+    transform: translateY(20px); opacity: 0;
+    transition: transform .4s ease, opacity .4s ease;
+    z-index: 900;
+    pointer-events: none;
+  }
+  #toast.show { transform: translateY(0); opacity: 1; }
+
+  /* ── AI BANNER ───────────────────────────────────── */
+  #ai-banner {
+    background: linear-gradient(90deg, rgba(201,168,76,.08), rgba(201,168,76,.15), rgba(201,168,76,.08));
+    border-top: 1px solid rgba(201,168,76,.2);
+    border-bottom: 1px solid rgba(201,168,76,.2);
+    padding: 20px 48px;
+    text-align: center;
+    overflow: hidden;
+  }
+  .ai-scroll {
+    display: inline-flex; gap: 80px;
+    animation: scrollX 20s linear infinite;
+    white-space: nowrap;
+  }
+  @keyframes scrollX { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+  .ai-item {
+    display: inline-flex; align-items: center; gap: 12px;
+    font-size: .7rem; letter-spacing: .2em; text-transform: uppercase;
+    color: var(--gold);
+  }
+  .ai-dot { width: 4px; height: 4px; background: var(--gold); border-radius: 50%; }
+
+  /* ── RESPONSIVE ──────────────────────────────────── */
+  @media (max-width: 900px) {
+    nav { padding: 20px 24px; }
+    .nav-links { display: none; }
+    .story-inner,
+    .qr-inner,
+    .reserve-inner { grid-template-columns: 1fr; gap: 60px; }
+    .chapter { padding: 80px 24px; }
+    .gallery-masonry { grid-template-columns: repeat(2,1fr); }
+    .footer-top { grid-template-columns: 1fr 1fr; }
+    #cart-sidebar { width: 100%; }
+    .menu-grid { grid-template-columns: 1fr; }
+    .tracker-timeline { gap: 4px; }
+    .t-label { font-size: .5rem; }
+  }
+
+  /* ── REVEAL DEFAULTS ─────────────────────────────── */
+  .reveal { opacity: 0; transform: translateY(40px); }
+  .reveal-left { opacity: 0; transform: translateX(-40px); }
+  .reveal-right { opacity: 0; transform: translateX(40px); }
+
+  /* ── AMBIENT PARTICLES ───────────────────────────── */
+  #particles {
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 1;
+    overflow: hidden;
+  }
+  .particle {
+    position: absolute;
+    width: 2px; height: 2px;
+    background: var(--gold);
+    border-radius: 50%;
+    opacity: 0;
+    animation: particleFly linear infinite;
+  }
+  @keyframes particleFly {
+    0%   { transform: translateY(100vh) translateX(0); opacity: 0; }
+    10%  { opacity: .6; }
+    90%  { opacity: .3; }
+    100% { transform: translateY(-100px) translateX(var(--dx,20px)); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Ambient particles -->
+<div id="particles"></div>
+
+<!-- Custom cursor -->
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- Intro overlay -->
+<div id="intro">
+  <div id="intro-bar"></div>
+  <div id="intro-logo">CAFE UBUD</div>
+  <div id="intro-tagline">A Bali Experience in Amravati</div>
+  <div id="sound-hint">▶ Enter the Experience</div>
+</div>
+
+<!-- Navigation -->
+<nav>
+  <a href="#" class="nav-logo">CAFE UBUD</a>
+  <ul class="nav-links">
+    <li><a href="#story">Story</a></li>
+    <li><a href="#menu">Menu</a></li>
+    <li><a href="#qr-order">Order</a></li>
+    <li><a href="#gallery">Gallery</a></li>
+    <li><a href="#reserve">Reserve</a></li>
+  </ul>
+  <button class="nav-cta" onclick="document.getElementById('reserve').scrollIntoView({behavior:'smooth'})">Reserve Table</button>
+</nav>
+
+<!-- Hero -->
+<section id="hero">
+  <div class="hero-bg">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="leaf leaf-1"></div>
+    <div class="leaf leaf-2"></div>
+  </div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Amravati · Maharashtra · India</div>
+    <h1 class="hero-title">
+      <span class="line"><span class="word">ESCAPE</span></span>
+      <span class="line"><span class="word" style="color:var(--gold)">AMRAVATI.</span></span>
+      <span class="line"><span class="word">ENTER</span></span>
+      <span class="line"><span class="word" style="color:var(--gold)">UBUD.</span></span>
+    </h1>
+    <div class="hero-divider"></div>
+    <p class="hero-sub">Where every sip tells a story from Bali.</p>
+    <div class="hero-actions">
+      <a href="#menu" class="btn-primary">Explore Menu</a>
+      <a href="#qr-order" class="btn-outline">Order at Table</a>
+      <a href="#reserve" class="btn-outline">Reserve</a>
+    </div>
+  </div>
+  <div class="scroll-indicator">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- AI Recommendation Banner -->
+<div id="ai-banner">
+  <div class="ai-scroll">
+    <span class="ai-item"><span class="ai-dot"></span>☀️ Perfect morning: Signature Bali Sunrise Latte</span>
+    <span class="ai-item"><span class="ai-dot"></span>🌧️ Rainy day pick: Warm Spiced Cardamom Brew</span>
+    <span class="ai-item"><span class="ai-dot"></span>🔥 Trending now: Iced Coconut Cold Brew</span>
+    <span class="ai-item"><span class="ai-dot"></span>⭐ Most loved: Ubud Tiramisu</span>
+    <span class="ai-item"><span class="ai-dot"></span>☀️ Perfect morning: Signature Bali Sunrise Latte</span>
+    <span class="ai-item"><span class="ai-dot"></span>🌧️ Rainy day pick: Warm Spiced Cardamom Brew</span>
+    <span class="ai-item"><span class="ai-dot"></span>🔥 Trending now: Iced Coconut Cold Brew</span>
+    <span class="ai-item"><span class="ai-dot"></span>⭐ Most loved: Ubud Tiramisu</span>
+  </div>
+</div>
+
+<!-- Story Section -->
+<section id="story">
+  <div class="story-inner">
+    <div class="story-visual reveal-left">
+      <div class="story-frame story-frame-1">
+        <div class="frame-inner">
+          <div class="frame-emoji">☕</div>
+          <div class="frame-caption">Origin · Bali Highlands</div>
+        </div>
+      </div>
+      <div class="story-frame story-frame-2">
+        <div class="frame-inner">
+          <div class="frame-emoji">🌿</div>
+          <div class="frame-caption">Crafted with Nature</div>
+        </div>
+      </div>
+      <div class="story-accent-line"></div>
+    </div>
+    <div class="reveal-right">
+      <div class="section-label">Our Story</div>
+      <h2 class="section-title">Born from a <em>dream</em><br>of Balinese calm.</h2>
+      <p class="section-body" style="margin:28px 0">We built Cafe Ubud not to open another café — but to transplant a feeling. The soft mist over Ubud's rice paddies. The sound of a bamboo chime. The first sip of coffee in a jungle resort at golden hour.</p>
+      <p class="section-body">In Amravati, we created a portal. Every detail — the aroma, the light, the textures — is chosen to make you forget you're 5,000 kilometres from Bali.</p>
+      <a href="#story" class="btn-outline" style="margin-top:40px; display:inline-block">Read the Full Story</a>
+    </div>
+  </div>
+</section>
+
+<!-- Chapters / Parallax Storytelling -->
+<section id="ch1" class="chapter">
+  <div class="chapter-bg"></div>
+  <div class="chapter-overlay"></div>
+  <div class="chapter-content">
+    <div class="chapter-number">01</div>
+    <div class="section-label reveal">Why Bali?</div>
+    <h2 class="section-title reveal" style="font-size:clamp(2.5rem,5vw,5rem); max-width:500px">Bali doesn't just refresh — <em>it transforms.</em></h2>
+    <p class="section-body reveal" style="margin-top:28px">The island taught us that the greatest luxury is time — time to breathe, taste, and be present. We brought that philosophy home.</p>
+  </div>
+</section>
+<section id="ch2" class="chapter">
+  <div class="chapter-bg"></div>
+  <div class="chapter-overlay"></div>
+  <div class="chapter-content">
+    <div class="chapter-number">02</div>
+    <div class="section-label reveal">The Coffee Philosophy</div>
+    <h2 class="section-title reveal" style="font-size:clamp(2.5rem,5vw,5rem); max-width:500px">Single-origin beans. <em>Infinite</em> ritual.</h2>
+    <p class="section-body reveal" style="margin-top:28px">We source directly from small-lot farms in Bali's Kintamani highlands. Every bean is traceable to a family, a harvest, a story.</p>
+  </div>
+</section>
+<section id="ch3" class="chapter">
+  <div class="chapter-bg"></div>
+  <div class="chapter-overlay"></div>
+  <div class="chapter-content">
+    <div class="chapter-number">03</div>
+    <div class="section-label reveal">The Café as Art</div>
+    <h2 class="section-title reveal" style="font-size:clamp(2.5rem,5vw,5rem); max-width:500px">A space designed to <em>slow you down.</em></h2>
+    <p class="section-body reveal" style="margin-top:28px">Bamboo textures, living plants, warm candlelight, and ambient rain sounds from Ubud's rice terraces. This is not décor — it's atmosphere, engineered for peace.</p>
+  </div>
+</section>
+
+<!-- Menu Section -->
+<section id="menu">
+  <div class="menu-header">
+    <div class="section-label reveal">The Menu</div>
+    <h2 class="section-title reveal">Every item is a <em>journey.</em></h2>
+    <div class="menu-tabs">
+      <button class="menu-tab active" onclick="filterMenu('all', this)">All</button>
+      <button class="menu-tab" onclick="filterMenu('coffee', this)">Hot Coffee</button>
+      <button class="menu-tab" onclick="filterMenu('cold', this)">Cold Brew</button>
+      <button class="menu-tab" onclick="filterMenu('food', this)">Food</button>
+      <button class="menu-tab" onclick="filterMenu('dessert', this)">Desserts</button>
+    </div>
+  </div>
+  <div class="menu-grid" id="menu-grid">
+    <!-- Dynamically inserted by JS -->
+  </div>
+</section>
+
+<!-- QR Ordering -->
+<section id="qr-order">
+  <div class="qr-inner">
+    <div class="qr-visual reveal-left">
+      <div class="qr-frame">
+        <div class="qr-inner-grid" id="qr-grid"></div>
+      </div>
+      <div class="qr-table-badge">TABLE 07 · SCAN TO ORDER</div>
+      <p style="font-size:.75rem; color:rgba(250,246,239,.35); text-align:center; max-width:200px">No app. No login. Instant menu access from your phone.</p>
+    </div>
+    <div class="reveal-right">
+      <div class="section-label">Table Ordering</div>
+      <h2 class="section-title">Scan. Browse. <em>Order.</em></h2>
+      <p class="section-body" style="margin-top:24px; margin-bottom:48px">Every table has its own QR code. Scan it and the full experience opens instantly — browse our menu, watch preparation videos, customise your order, and track it in real time. No friction, no waiting.</p>
+      <div class="qr-steps">
+        <div class="qr-step">
+          <div class="step-num">1</div>
+          <div class="step-text">
+            <h4>Scan the QR code</h4>
+            <p>Every table has a unique code linked directly to your session.</p>
+          </div>
+        </div>
+        <div class="qr-step">
+          <div class="step-num">2</div>
+          <div class="step-text">
+            <h4>Browse & customise</h4>
+            <p>Watch preparation videos, explore ingredients, choose your preferences.</p>
+          </div>
+        </div>
+        <div class="qr-step">
+          <div class="step-num">3</div>
+          <div class="step-text">
+            <h4>Order & track live</h4>
+            <p>Place your order and watch the status update in real time as the kitchen prepares it.</p>
+          </div>
+        </div>
+        <div class="qr-step">
+          <div class="step-num">4</div>
+          <div class="step-text">
+            <h4>Request anything</h4>
+            <p>Call the waiter, request water, ask for the bill — all from your screen.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Live Order Tracker -->
+<section id="tracker">
+  <div class="tracker-inner">
+    <div class="section-label reveal">Live Order Status</div>
+    <h2 class="section-title reveal">Your order, <em>every step</em> of the way.</h2>
+    <div class="tracker-timeline reveal" id="tracker-timeline">
+      <!-- Filled by JS -->
+    </div>
+    <button class="btn-outline" onclick="advanceTracker()" style="margin-top:60px; cursor:none">▶ Simulate Order Progress</button>
+  </div>
+</section>
+
+<!-- Gallery -->
+<section id="gallery">
+  <div class="gallery-header">
+    <div class="section-label reveal">Gallery</div>
+    <h2 class="section-title reveal">A place worth <em>sharing.</em></h2>
+  </div>
+  <div class="gallery-masonry">
+    <div class="g-cell g1"><div class="g-overlay"></div><div class="g-inner">☕<span class="g-label">Espresso Ritual</span></div></div>
+    <div class="g-cell g2"><div class="g-overlay"></div><div class="g-inner">🌿<span class="g-label">Tropical Greens</span></div></div>
+    <div class="g-cell g3"><div class="g-overlay"></div><div class="g-inner">🍰<span class="g-label">Ubud Tiramisu</span></div></div>
+    <div class="g-cell g4"><div class="g-overlay"></div><div class="g-inner">🥤<span class="g-label">Cold Brew</span></div></div>
+    <div class="g-cell g5"><div class="g-overlay"></div><div class="g-inner">🌅<span class="g-label">Golden Hour</span></div></div>
+    <div class="g-cell g6"><div class="g-overlay"></div><div class="g-inner">🎋<span class="g-label">Bamboo Corner</span></div></div>
+    <div class="g-cell g7"><div class="g-overlay"></div><div class="g-inner">🍕<span class="g-label">Bali-Style Pizza</span></div></div>
+    <div class="g-cell g8"><div class="g-overlay"></div><div class="g-inner">✨<span class="g-label">Evening Vibes</span></div></div>
+  </div>
+</section>
+
+<!-- Reserve -->
+<section id="reserve">
+  <div class="reserve-inner">
+    <div class="reveal-left">
+      <div class="section-label">Reservations</div>
+      <h2 class="section-title">Claim your <em>escape.</em></h2>
+      <p class="section-body" style="margin:28px 0">Reserve your table and we'll prepare your corner of Bali before you arrive. Candles lit. Music set. Your favourite order ready to go.</p>
+      <div class="reserve-info">
+        <div class="reserve-detail">
+          <span class="rd-icon">🕐</span>
+          <div class="rd-text">
+            <h4>Hours</h4>
+            <p>Mon–Thu: 8:00 AM – 11:00 PM<br>Fri–Sun: 8:00 AM – Midnight</p>
+          </div>
+        </div>
+        <div class="reserve-detail">
+          <span class="rd-icon">📍</span>
+          <div class="rd-text">
+            <h4>Location</h4>
+            <p>Cafe Ubud, Main Street,<br>Amravati, Maharashtra</p>
+          </div>
+        </div>
+        <div class="reserve-detail">
+          <span class="rd-icon">📞</span>
+          <div class="rd-text">
+            <h4>Contact</h4>
+            <p>+91 98765 43210<br>hello@cafeubud.in</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="reveal-right">
+      <div class="form-field">
+        <label>Full Name</label>
+        <input type="text" id="res-name" placeholder="Your name">
+      </div>
+      <div class="form-field">
+        <label>Phone Number</label>
+        <input type="tel" id="res-phone" placeholder="+91">
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label>Date</label>
+          <input type="date" id="res-date">
+        </div>
+        <div class="form-field">
+          <label>Time</label>
+          <input type="time" id="res-time">
+        </div>
+      </div>
+      <div class="form-field">
+        <label>Guests</label>
+        <select id="res-guests">
+          <option value="1">1 Guest</option>
+          <option value="2" selected>2 Guests</option>
+          <option value="3">3 Guests</option>
+          <option value="4">4 Guests</option>
+          <option value="5">5+ Guests</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label>Special Requests</label>
+        <input type="text" id="res-notes" placeholder="Birthday, anniversary, dietary...">
+      </div>
+      <button class="btn-primary" style="width:100%; text-align:center; margin-top:12px" onclick="submitReservation()">Confirm Reservation</button>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="brand-name">CAFE UBUD</div>
+        <p>A premium Bali-inspired café experience in the heart of Amravati. Where great coffee meets mindful living.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Explore</h5>
+        <ul>
+          <li><a href="#story">Our Story</a></li>
+          <li><a href="#menu">Menu</a></li>
+          <li><a href="#gallery">Gallery</a></li>
+          <li><a href="#reserve">Reservations</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Order</h5>
+        <ul>
+          <li><a href="#qr-order">QR Table Order</a></li>
+          <li><a href="#">Takeaway</a></li>
+          <li><a href="#">Delivery</a></li>
+          <li><a href="#">Catering</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Connect</h5>
+        <ul>
+          <li><a href="#">Instagram</a></li>
+          <li><a href="#">WhatsApp</a></li>
+          <li><a href="#">Google Maps</a></li>
+          <li><a href="#">Leave a Review</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 Cafe Ubud Amravati. All rights reserved.</p>
+      <div class="social-links">
+        <a href="#" class="social-link">ig</a>
+        <a href="#" class="social-link">wa</a>
+        <a href="#" class="social-link">yt</a>
+        <a href="#" class="social-link">fb</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Cart Sidebar -->
+<div id="cart-sidebar">
+  <div class="cart-header">
+    <h3>Your Order</h3>
+    <button class="cart-close" onclick="toggleCart()">✕</button>
+  </div>
+  <div class="cart-items" id="cart-items-list">
+    <p style="color:rgba(250,246,239,.3); font-size:.8rem; text-align:center; padding-top:60px">Your cart is empty.<br>Add something beautiful.</p>
+  </div>
+  <div class="cart-footer">
+    <div class="cart-total">
+      <span>Total</span>
+      <strong id="cart-total-price">₹0</strong>
+    </div>
+    <button class="cart-checkout" onclick="placeOrder()">Place Order →</button>
+  </div>
+</div>
+
+<!-- Floating Cart -->
+<button id="cart-btn" onclick="toggleCart()">
+  🛒
+  <span id="cart-count">0</span>
+</button>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+// ── CURSOR ─────────────────────────────────────────
+const cursor     = document.getElementById('cursor');
+const cursorRing = document.getElementById('cursor-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+(function loop() {
+  rx += (mx - rx) * .12;
+  ry += (my - ry) * .12;
+  cursor.style.left     = mx + 'px';
+  cursor.style.top      = my + 'px';
+  cursorRing.style.left = rx + 'px';
+  cursorRing.style.top  = ry + 'px';
+  requestAnimationFrame(loop);
+})();
+
+// ── PARTICLES ─────────────────────────────────────
+const pc = document.getElementById('particles');
+for (let i = 0; i < 20; i++) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  p.style.left = Math.random() * 100 + 'vw';
+  p.style.setProperty('--dx', (Math.random() * 60 - 30) + 'px');
+  p.style.animationDuration = (Math.random() * 15 + 10) + 's';
+  p.style.animationDelay   = '-' + (Math.random() * 20) + 's';
+  p.style.width = p.style.height = (Math.random() * 3 + 1) + 'px';
+  pc.appendChild(p);
+}
+
+// ── INTRO ANIMATION ────────────────────────────────
+gsap.registerPlugin(ScrollTrigger, TextPlugin);
+const tl = gsap.timeline({ delay: .4, onComplete: () => {
+  gsap.to('#intro', { opacity:0, duration:.8, delay:.3,
+    onComplete: () => { document.getElementById('intro').style.display='none'; }});
+}});
+tl.to('#intro-bar', { width: '180px', duration: 1.2, ease: 'power2.inOut' })
+  .to('#intro-logo', { opacity: 1, y: 0, duration: .8, ease: 'power3.out' }, '-=.3')
+  .to('#intro-tagline', { opacity: 1, duration: .6 }, '+=.2')
+  .to({}, { duration: 1.5 });
+
+// ── HERO ANIMATION ─────────────────────────────────
+tl.add(() => {
+  gsap.to('.hero-eyebrow', { opacity:1, y:0, duration:.8, ease:'power3.out' });
+  gsap.to('.hero-title .word', { y:0, duration:1, stagger:.12, ease:'power4.out', delay:.2 });
+  gsap.to('.hero-divider',     { scaleY:1, opacity:1, duration:.8, delay:.7 });
+  gsap.to('.hero-sub',         { opacity:1, y:0, duration:.8, delay:.9 });
+  gsap.to('.hero-actions',     { opacity:1, duration:.8, delay:1.1 });
+  gsap.to('.scroll-indicator', { opacity:1, duration:.8, delay:1.4 });
+}, '-=.5');
+
+// ── SCROLLTRIGGER REVEALS ──────────────────────────
+document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => {
+  const x = el.classList.contains('reveal-left') ? -40 : el.classList.contains('reveal-right') ? 40 : 0;
+  gsap.fromTo(el,
+    { opacity:0, y: el.classList.contains('reveal') ? 40 : 0, x },
+    { opacity:1, y:0, x:0, duration:1, ease:'power3.out',
+      scrollTrigger: { trigger:el, start:'top 85%', toggleActions:'play none none none' }
+    }
+  );
+});
+
+// ── PARALLAX CHAPTERS ─────────────────────────────
+document.querySelectorAll('.chapter-bg').forEach(bg => {
+  gsap.to(bg, {
+    y: '30%',
+    ease: 'none',
+    scrollTrigger: { trigger: bg.closest('.chapter'), scrub: 1.5 }
+  });
+});
+
+// ── MENU DATA (live from Flask backend) ────────────
+const bgClasses = { coffee:'mc-coffee', cold:'mc-cold', food:'mc-food', dessert:'mc-dessert' };
+let menuItems = [];
+let cart = [];
+
+async function loadMenu() {
+  try {
+    const res = await fetch('/api/menu');
+    const data = await res.json();
+    menuItems = data.map(d => ({
+      id: d.id, cat: d.category, emoji: d.emoji, name: d.name,
+      desc: d.description, price: d.price, tag: d.tag, image_url: d.image_url || ''
+    }));
+    renderMenu();
+  } catch (e) {
+    console.error('Could not load menu from server:', e);
+  }
+}
+
+function renderMenu(filter='all') {
+  const grid = document.getElementById('menu-grid');
+  grid.innerHTML = '';
+  menuItems.filter(m => filter === 'all' || m.cat === filter).forEach((m) => {
+    const card = document.createElement('div');
+    card.className = 'menu-card';
+    const bgHtml = m.image_url
+      ? `<div class="menu-card-bg" style="background:#111;padding:0;position:absolute;inset:0;overflow:hidden;"><img src="${m.image_url}" style="width:100%;height:100%;object-fit:cover;display:block;"></div>`
+      : `<div class="menu-card-bg ${bgClasses[m.cat] || 'mc-coffee'}">${m.emoji}</div>`;
+    card.innerHTML = `
+      ${bgHtml}
+      <div class="menu-card-info">
+        <div class="card-tag">${m.tag}</div>
+        <div class="card-name">${m.name}</div>
+        <div class="card-desc">${m.desc}</div>
+        <div class="card-footer">
+          <div class="card-price">₹${m.price}</div>
+          <button class="card-add" onclick="addToCart(${m.id})" title="Add to order">+</button>
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+function filterMenu(cat, btn) {
+  document.querySelectorAll('.menu-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderMenu(cat);
+}
+loadMenu();
+
+// ── CART ──────────────────────────────────────────
+function addToCart(id) {
+  const item = menuItems.find(m => m.id === id);
+  if (!item) return;
+  const existing = cart.find(c => c.id === id);
+  if (existing) existing.qty++;
+  else cart.push({ ...item, qty:1 });
+  updateCart();
+  showToast(`${item.emoji} ${item.name} added!`);
+}
+function updateCart() {
+  document.getElementById('cart-count').textContent = cart.reduce((s,c)=>s+c.qty,0);
+  const total = cart.reduce((s,c)=>s+c.price*c.qty,0);
+  document.getElementById('cart-total-price').textContent = '₹'+total;
+  const list = document.getElementById('cart-items-list');
+  if (!cart.length) { list.innerHTML='<p style="color:rgba(250,246,239,.3);font-size:.8rem;text-align:center;padding-top:60px">Your cart is empty.<br>Add something beautiful.</p>'; return; }
+  list.innerHTML = cart.map((c,i)=>`
+    <div class="cart-item">
+      <div class="ci-emoji">${c.emoji}</div>
+      <div class="ci-info">
+        <div class="ci-name">${c.name}</div>
+        <div class="ci-price">₹${c.price}</div>
+      </div>
+      <div class="ci-qty">
+        <button onclick="changeQty(${i},-1)">−</button>
+        <span>${c.qty}</span>
+        <button onclick="changeQty(${i},1)">+</button>
+      </div>
+    </div>`).join('');
+}
+function changeQty(i, d) {
+  cart[i].qty += d;
+  if (cart[i].qty <= 0) cart.splice(i,1);
+  updateCart();
+}
+function toggleCart() {
+  document.getElementById('cart-sidebar').classList.toggle('open');
+}
+
+async function placeOrder() {
+  if (!cart.length) { showToast('Your cart is empty.'); return; }
+  try {
+    const res = await fetch('/api/orders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        items: cart.map(c => ({ menu_item_id: c.id, quantity: c.qty }))
+      })
+    });
+    if (!res.ok) throw new Error('Order failed');
+    const order = await res.json();
+    cart = [];
+    updateCart();
+    toggleCart();
+    showToast(`Order #${order.id} placed! Total ₹${order.total_amount}`);
+  } catch (e) {
+    showToast('Could not place order — please try again.');
+  }
+}
+
+// ── QR GRID ───────────────────────────────────────
+(function() {
+  const g = document.getElementById('qr-grid');
+  const pattern = [1,0,1,1,0,0,1,0,0,1,1,0,1,0,1,0,1,1,0,0,1,1,0,1,0];
+  pattern.forEach(v => {
+    const c = document.createElement('div');
+    c.className = 'qr-cell' + (v ? ' filled' : '');
+    g.appendChild(c);
+  });
+})();
+
+// ── ORDER TRACKER ─────────────────────────────────
+const steps = [
+  { label:'Received', emoji:'📋' },
+  { label:'Accepted', emoji:'✅' },
+  { label:'Preparing', emoji:'👨‍🍳' },
+  { label:'Cooking',  emoji:'🔥' },
+  { label:'Quality',  emoji:'⭐' },
+  { label:'Ready',    emoji:'🔔' },
+  { label:'Served',   emoji:'🍽️' },
+];
+let trackerStep = 0;
+function renderTracker() {
+  const tl = document.getElementById('tracker-timeline');
+  tl.innerHTML = steps.map((s,i)=>`
+    <div class="tracker-step">
+      <div class="t-dot ${i<trackerStep?'done':i===trackerStep?'active':''}">${s.emoji}</div>
+      <div class="t-label ${i<trackerStep?'done':i===trackerStep?'active':''}">${s.label}</div>
+    </div>`).join('');
+}
+function advanceTracker() {
+  if (trackerStep < steps.length) trackerStep++;
+  if (trackerStep === steps.length) trackerStep = 0;
+  renderTracker();
+  showToast('Order status: ' + (steps[trackerStep-1]?.label || 'Reset'));
+}
+renderTracker();
+
+// ── TOAST ─────────────────────────────────────────
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ── RESERVATIONS ──────────────────────────────────
+async function submitReservation() {
+  const name = document.getElementById('res-name').value.trim();
+  const phone = document.getElementById('res-phone').value.trim();
+  const date = document.getElementById('res-date').value;
+  const time = document.getElementById('res-time').value;
+  const guests = document.getElementById('res-guests').value;
+  const notes = document.getElementById('res-notes').value.trim();
+
+  if (!name || !phone || !date || !time) {
+    showToast('Please fill in name, phone, date and time.');
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/reservations', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, phone, date, time, guests, special_requests: notes })
+    });
+    if (!res.ok) throw new Error('Reservation failed');
+    showToast('Table reserved! We\'ll confirm shortly.');
+    ['res-name','res-phone','res-date','res-time','res-notes'].forEach(id => document.getElementById(id).value = '');
+  } catch (e) {
+    showToast('Could not submit reservation — please try again.');
+  }
+}
+</script>
+</body>
+</html>

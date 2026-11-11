@@ -1,0 +1,57 @@
+{% extends "admin/base.html" %}
+{% block title %}Reservations{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <div class="page-title">Reservations</div>
+    <div class="page-subtitle">{{ reservations|length }} total bookings</div>
+  </div>
+</div>
+
+<div class="card" style="padding:0; overflow-x:auto;">
+  <table>
+    <thead>
+      <tr>
+        <th>Guest</th>
+        <th>Phone</th>
+        <th>Date & Time</th>
+        <th>Guests</th>
+        <th>Notes</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in reservations %}
+      <tr>
+        <td>{{ r.name }}</td>
+        <td style="font-size:.78rem; color:var(--muted);">{{ r.phone }}</td>
+        <td>{{ r.date }} · {{ r.time }}</td>
+        <td>{{ r.guests }}</td>
+        <td style="font-size:.78rem; color:var(--muted); max-width:200px;">{{ r.special_requests or '—' }}</td>
+        <td>
+          <span class="badge badge-{{ r.status }}">{{ r.status }}</span>
+          {% if r.whatsapp_sent %}
+            <span class="badge" style="background:rgba(37,211,102,.15);color:#25D366;margin-left:4px;">WhatsApp ✓</span>
+          {% endif %}
+        </td>
+        <td>
+          <form method="POST" action="{{ url_for('admin.update_reservation_status', res_id=r.id) }}" style="display:flex; gap:6px;">
+            <select name="status" style="width:auto; padding:6px 10px; font-size:.75rem;">
+              <option value="pending" {{ 'selected' if r.status=='pending' }}>Pending</option>
+              <option value="confirmed" {{ 'selected' if r.status=='confirmed' }}>Confirmed</option>
+              <option value="cancelled" {{ 'selected' if r.status=='cancelled' }}>Cancelled</option>
+            </select>
+            <button type="submit" class="btn btn-sm btn-gold">Update</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7" style="text-align:center; color:var(--muted); padding:40px;">No reservations yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

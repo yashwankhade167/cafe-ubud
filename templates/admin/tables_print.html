@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Print Table QR Codes · Cafe Ubud</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Cinzel:wght@500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Cormorant Garamond', serif;
+    background: #fff;
+    color: #1A1208;
+    padding: 24px;
+  }
+  .print-toolbar {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 24px;
+    font-family: 'Inter', sans-serif;
+  }
+  .print-toolbar button {
+    background: #C9A84C; color: #1A1208; border: none;
+    font-family: 'Cinzel', serif; font-size: .75rem; letter-spacing: .15em; text-transform: uppercase;
+    padding: 10px 24px; border-radius: 4px; cursor: pointer;
+  }
+  .print-toolbar p { font-size: .8rem; color: #555; font-family: 'Inter', sans-serif; }
+
+  .sheet {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .card {
+    border: 1.5px dashed #C9A84C;
+    border-radius: 10px;
+    padding: 28px 20px;
+    text-align: center;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  .card .brand {
+    font-family: 'Cinzel', serif;
+    font-size: .8rem; letter-spacing: .25em;
+    color: #C9A84C; margin-bottom: 6px;
+  }
+  .card .tagline {
+    font-size: .85rem; font-style: italic; color: #555; margin-bottom: 18px;
+  }
+  .card img {
+    width: 160px; height: 160px; display: block; margin: 0 auto 18px;
+  }
+  .card .table-num {
+    font-size: 1.5rem; color: #1A1208;
+  }
+  .card .scan-hint {
+    font-family: 'Inter', sans-serif;
+    font-size: .65rem; letter-spacing: .1em; text-transform: uppercase;
+    color: #999; margin-top: 10px;
+  }
+
+  @media print {
+    .print-toolbar { display: none; }
+    body { padding: 0; }
+    .sheet { gap: 16px; }
+    .card { border-color: #C9A84C; }
+  }
+</style>
+</head>
+<body>
+
+<div class="print-toolbar">
+  <p>{{ tables|length }} table QR codes · cut along the dashed border and place one per table</p>
+  <button onclick="window.print()">🖨 Print This Page</button>
+</div>
+
+<div class="sheet">
+  {% for t in tables %}
+  <div class="card">
+    <div class="brand">CAFE UBUD</div>
+    <div class="tagline">Scan to order</div>
+    <img src="{{ url_for('api.table_qr_image', token=t.qr_token) }}" alt="QR code for table {{ t.number }}">
+    <div class="table-num">Table {{ t.number }}</div>
+    <div class="scan-hint">No App · No Login · Instant Menu</div>
+  </div>
+  {% endfor %}
+</div>
+
+</body>
+</html>

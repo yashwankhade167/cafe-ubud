@@ -1,0 +1,16 @@
+# render.yaml — Render deployment configuration
+# Commit this file to the root of your GitHub repo.
+# Render will detect it automatically and configure the service.
+
+services:
+  - type: web
+    name: cafe-ubud
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: bash start.sh
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true   # Render auto-generates a secure random string
+      - key: PYTHON_VERSION
+        value: 3.12.0
+    healthCheckPath: /

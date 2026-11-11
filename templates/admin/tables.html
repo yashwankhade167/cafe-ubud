@@ -1,0 +1,38 @@
+{% extends "admin/base.html" %}
+{% block title %}Tables{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <div class="page-title">Tables & QR Codes</div>
+    <div class="page-subtitle">Each table has a unique, scannable QR code linking straight to its ordering page</div>
+  </div>
+  <a href="{{ url_for('admin.tables_print') }}" target="_blank" class="btn btn-gold">🖨 Print All QR Codes</a>
+</div>
+
+<div style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px;">
+  {% for t in tables %}
+  <div class="card" style="text-align:center;">
+    <div style="font-family:'Cormorant Garamond',serif; font-size:1.6rem; color:var(--gold); margin-bottom:14px;">Table {{ t.number }}</div>
+    <div style="background:var(--cream); border-radius:8px; padding:12px; display:inline-block; margin-bottom:14px;">
+      <img src="{{ url_for('api.table_qr_image', token=t.qr_token) }}" alt="QR code for table {{ t.number }}" width="140" height="140" style="display:block;">
+    </div>
+    <div style="font-size:.65rem; color:var(--muted); word-break:break-all; margin-bottom:14px;">/table/{{ t.qr_token }}</div>
+    <div style="display:flex; gap:8px;">
+      <a href="{{ url_for('public.table_order', token=t.qr_token) }}" target="_blank" class="btn btn-sm btn-outline" style="flex:1;">Open Page</a>
+      <a href="{{ url_for('api.table_qr_image', token=t.qr_token, download=1) }}" class="btn btn-sm btn-outline" style="flex:1;">Download</a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="card" style="margin-top:24px;">
+  <p style="font-size:.85rem; color:var(--muted); line-height:1.7;">
+    Each QR code above is a real, scannable image — generated on the fly and encoding the full URL to that
+    table's ordering page. Download individual codes, or use <strong>Print All QR Codes</strong> for a
+    print-ready sheet you can cut out and place on each physical table.
+  </p>
+</div>
+
+{% endblock %}
+
