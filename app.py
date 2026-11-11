@@ -14,15 +14,22 @@ Environment variables:
 """
 
 import os
+import tempfile
 from flask import Flask
 from flask_socketio import SocketIO
+from sqlalchemy import inspect
 from models import db
 
 socketio = SocketIO(cors_allowed_origins="*")
 
 
 def create_app():
-    app = Flask(__name__, instance_relative_config=True)
+    # Vercel's deployment filesystem is read-only outside /tmp
+    flask_kwargs = {"instance_relative_config": True}
+    if os.environ.get("VERCEL"):
+        flask_kwargs["instance_path"] = os.path.join(tempfile.gettempdir(), "instance")
+
+    app = Flask(__name__, **flask_kwargs)
     os.makedirs(app.instance_path, exist_ok=True)
 
     # Upload folder for menu item images
@@ -51,6 +58,13 @@ def create_app():
     app.register_blueprint(public_bp)
     app.register_blueprint(api_bp, url_prefix="/api")
     app.register_blueprint(admin_bp, url_prefix="/admin")
+
+    if os.environ.get("VERCEL"):
+        with app.app_context():
+            if not inspect(db.engine).has_table("categories"):
+                from seed import populate_sample_data
+                db.create_all()
+                populate_sample_data()
 
     return app
 
